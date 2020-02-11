@@ -64,7 +64,7 @@ class Blockchain {
   _addBlock(block) {
     let self = this;
     return new Promise(async (resolve, reject) => {
-      if (block.height !== 0) {
+      if (self.chain.length !== 0) {
         block.previousBlockHash = self.chain[self.chain.length - 1].hash;
       }
       block.time = new Date()
@@ -211,18 +211,18 @@ class Blockchain {
     let errorLog = [];
     return new Promise(async (resolve, reject) => {
       self.chain.map((block, index, chain) => {
-        validateBlock(block, errorLog);
+        self.validateBlock(block, errorLog);
         let perviousBlock = chain[index - 1];
         if (index !== 0) {
-          validateChainAtBlock(block, perviousBlock, errorLog);
+          self.validateChainAtBlock(block, perviousBlock, errorLog);
         }
       });
       resolve(errorLog);
     });
   }
 
-  validateBlock(block, errorLogArray) {
-    if (!block.validate()) {
+  async validateBlock(block, errorLogArray) {
+    if (await !block.validate()) {
       errorLogArray.push(`Block ${block.height} is not valid`);
     }
   }
